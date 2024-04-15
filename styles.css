@@ -20,8 +20,18 @@
     text-align: center;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    flex: 1 0 25%; /* Ensures equal card width on most screens */
+    flex: 1 0 5%; /* Ensures equal card width on most screens */
 }
+#dbms{
+    height: 200.78px;
+}
+#os{
+    height: 200.78px;
+}
+#python{
+    height:200.78px
+}
+
 
 .card h2 {
     margin-bottom: 15px;
