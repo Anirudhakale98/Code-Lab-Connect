@@ -61,7 +61,7 @@ app.post('/signup', async (req, res) => {
         }
         await collection.insertMany([data]);
         message = "User created successfully";
-        res.render('/signin');
+        res.render('signin');
     }
 
     // res.render('home' , data);
@@ -163,27 +163,72 @@ app.post('/submit', async (req, res) => {
 
     let output = req.body.output;
 
-    let prev = await submission.findOne({ username, subject, id })
-    if (prev == null) {
-        await submission.insertMany([{ username: username, subject: subject, output: [{ id, question, code, output }] }]).then((data) => {
+    let currUser = await submission.findOne({ username})
+    if(currUser == null){
+        await submission.insertMany([{ username: username, subject: subject, output: [{ id, question, code, output }] }])
+        .then((data) => {
             console.log('data inserted');
             console.log(data);
         }).catch((err) => {
             console.log(err);
         });
-    } else {
-        await submission.findOneAndUpdate({ username, subject }, { $push: { output: { id, question, code, output } } })
-            .then
-            ((data) => {
+    }else if(currUser.subject == subject){
+        let prev = await submission.findOne({ username, subject});
+        if(prev.output.find((element) => element.id == id) == null){
+            await submission.findOneAndUpdate({ username, subject }, { $push: { output: { id, question, code, output } } })
+            .then((data) => {
                 console.log('data updated');
                 console.log(data);
             }).catch((err) => {
                 console.log(err);
             });
+        }else{
+            prev.output.forEach(element => {
+                if(element.id == id){
+                    element.code = code;
+                    element.output = output;
+                }
+            });
+        }
+    }else{
+        await submission.insertMany([{ username: username, subject: subject, output: [{ id, question, code, output }] }])
+        .then((data) => {   
+            console.log('data inserted');
+            console.log(data);
+        }
+        ).catch((err) => {
+            console.log(err);
+        });
     }
 
+    // if (prev != null) {
+    //     if(prev.output.find((element) => element.id == id) == null) {
+    //         await submission.findOneAndUpdate({ username, subject }, { $push: { output: { id, question, code, output } } })
+    //         .then
+    //         ((data) => {
+    //             console.log('data updated');
+    //             console.log(data);
+    //         }).catch((err) => {
+    //             console.log(err);
+    //         });
+    //     }else
 
-    res.send('success');
+    // } else 
+        
+        
+    // }else{
+    //     await submission.findOneAndUpdate({ username, subject, 'output.id': id }, { $set: { 'output.$.code': code, 'output.$.output': output } })
+
+    //     await submission.insertMany([{ username: username, subject: subject, output: [{ id, question, code, output }] }]).then((data) => {
+    //             console.log('data inserted');
+    //             console.log(data);
+    //         }).catch((err) => {
+    //             console.log(err);
+    //         });
+    // }
+
+
+    res.send('success');    
 
 });
 
