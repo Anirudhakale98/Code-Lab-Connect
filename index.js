@@ -46,51 +46,56 @@ app.get('/signin', (req, res) => {
 });
 
 app.get('/signup', (req, res) => {
-    res.render('signup');
+    res.render('signup.ejs');
 });
 
 app.post('/signup', async (req, res) => {
-    let user = await collection.findOne({ username: req.body.email });
-    if (user) {
-        // res.render('error', {err: "User already exists"});
-        res.redirect('/signin');
-    } else {
-        const data = {
-            username: req.body.email,
-            password: req.body.password,
-        }
-        await collection.insertMany([data]);
-        message = "User created successfully";
-        res.render('signin');
+    const data = {
+        username: req.body.email,
+        password: req.body.password,
     }
 
+    let user = await collection.findOne({ username: data.username });
+    console.log(user)
+    if (user == null) {
+        await collection.insertMany([data]);
+        console.log("User created successfully");
+        // res.redirect('/signin');
+        // res.render('error', {err: "User already exists"});
+    } else {
+        console.log('user already exists');
+    }
+    res.redirect('/signin');
+
     // res.render('home' , data);
+});
+
+
+app.post('/signin', async (req, res) => {
+    let {username, password} = req.body;
+    const check = await collection.findOne({ username: username });
+    console.log(`user:${check}`)
+    if (check == null) {
+        res.render('error', { err: "Signin first" });
+    } else {
+        console.log(`req.body.password:${req.body.password}`)
+        if (check.password === req.body.password) {
+            console.log('password matched')
+            res.redirect('/' + check.username);
+        }
+        else {
+            console.log('password not matched')
+            res.render('error', { err: "Invalid username or password" });
+        }
+    }
+
+
 });
 
 app.get('/:username', (req, res) => {
     let { username } = req.params;
     res.render('home', { username });
 });
-
-app.post('/signin', async (req, res) => {
-
-    try {
-        const check = await collection.findOne({ name: req.body.email })
-
-        if (check.password === req.body.password) {
-            res.redirect('/' + req.body.username);
-        }
-        else {
-            res.render('error', { err: "Invalid username or password" });
-        }
-
-
-    }
-    catch {
-        res.render('error', { err: "Invalid username or password" });
-    }
-});
-
 
 app.get('/:username/:subject', (req, res) => {
 
@@ -164,6 +169,7 @@ app.post('/submit', async (req, res) => {
     let output = req.body.output;
 
     let currUser = await submission.findOne({ username})
+    console.log(`currUser:${currUser}`);
     if(currUser == null){
         await submission.insertMany([{ username: username, subject: subject, output: [{ id, question, code, output }] }])
         .then((data) => {
@@ -173,7 +179,9 @@ app.post('/submit', async (req, res) => {
             console.log(err);
         });
     }else if(currUser.subject == subject){
+        // console.log('inside else if')
         let prev = await submission.findOne({ username, subject});
+        // console.log(`prev:${prev}`)
         if(prev.output.find((element) => element.id == id) == null){
             await submission.findOneAndUpdate({ username, subject }, { $push: { output: { id, question, code, output } } })
             .then((data) => {
@@ -183,11 +191,13 @@ app.post('/submit', async (req, res) => {
                 console.log(err);
             });
         }else{
-            prev.output.forEach(element => {
-                if(element.id == id){
-                    element.code = code;
-                    element.output = output;
-                }
+            console.log('inside else else');
+            await submission.findOneAndUpdate({ username, subject, 'output.id': id }, { $set: { 'output.$.code': code, 'output.$.output': output } })
+            .then((data) => {
+                console.log('data updated');
+                console.log(data);
+            }).catch((err) => {
+                console.log(err);
             });
         }
     }else{
@@ -201,31 +211,7 @@ app.post('/submit', async (req, res) => {
         });
     }
 
-    // if (prev != null) {
-    //     if(prev.output.find((element) => element.id == id) == null) {
-    //         await submission.findOneAndUpdate({ username, subject }, { $push: { output: { id, question, code, output } } })
-    //         .then
-    //         ((data) => {
-    //             console.log('data updated');
-    //             console.log(data);
-    //         }).catch((err) => {
-    //             console.log(err);
-    //         });
-    //     }else
-
-    // } else 
-        
-        
-    // }else{
-    //     await submission.findOneAndUpdate({ username, subject, 'output.id': id }, { $set: { 'output.$.code': code, 'output.$.output': output } })
-
-    //     await submission.insertMany([{ username: username, subject: subject, output: [{ id, question, code, output }] }]).then((data) => {
-    //             console.log('data inserted');
-    //             console.log(data);
-    //         }).catch((err) => {
-    //             console.log(err);
-    //         });
-    // }
+   
 
 
     res.send('success');    
