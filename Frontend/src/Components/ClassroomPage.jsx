@@ -11,10 +11,9 @@ import {
     Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import Dashboard from "./Dashboard";
 
-import { useLocation } from "react-router-dom";
 
 
 
@@ -59,6 +58,8 @@ const currClass ={
     color: "linear-gradient(135deg, #607d8b, #455a64)",
     description: "This classroom is to get familar with enivormnet",
 }
+
+
 
 
 // Main Classroom Page
@@ -107,7 +108,7 @@ const ClassroomPage = () => {
                                                 color="secondary"
                                                 size="small"
                                                 component={Link}
-                                                to={`/assignments/${assignment.id}/solve`}
+                                                to={`/classes/${currClass.title}/assignments/${assignment.id}/solve`}
                                             >
                                                 Solve
                                             </Button>
@@ -116,7 +117,7 @@ const ClassroomPage = () => {
                                                 color="secondary"
                                                 size="small"
                                                 component={Link}
-                                                to={`/assignments/${assignment.id}/view`}
+                                                to={`/classes/${currClass.title}/assignments/${assignment.id}/view`}
                                             >
                                                 View
                                             </Button>
