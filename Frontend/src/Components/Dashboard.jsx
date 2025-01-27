@@ -70,7 +70,7 @@ const Dashboard = ({ user = { name: "User" } }) => {
         </Typography>
       </Toolbar>
       <List>
-        <ListItem button sx={hoverStyle} component={StyledLink} to={"/"}>
+        <ListItem button sx={hoverStyle} component={StyledLink} to={`/${user.role}s/`}>
           <ListItemText
             primary="Home"
             primaryTypographyProps={{ variant: "h6", fontWeight: "medium" }}
@@ -82,7 +82,7 @@ const Dashboard = ({ user = { name: "User" } }) => {
             button
             key={index}
             component={StyledLink}
-            to={`/classes/${classItem.title}`}
+            to={`/${user.role}s/classes/${classItem.title}`}
           >
             <ListItemText
               primary={classItem.title}

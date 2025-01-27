@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { Link, useParams, useLocation } from "react-router-dom";
-import Dashboard from "./Dashboard";
+import Dashboard from "../Dashboard";
 
 
 
@@ -108,7 +108,7 @@ const ClassroomPage = () => {
                                                 color="secondary"
                                                 size="small"
                                                 component={Link}
-                                                to={`/classes/${currClass.title}/assignments/${assignment.id}/solve`}
+                                                to={`/students/classes/${currClass.title}/assignments/${assignment.id}/solve`}
                                             >
                                                 Solve
                                             </Button>
@@ -117,7 +117,7 @@ const ClassroomPage = () => {
                                                 color="secondary"
                                                 size="small"
                                                 component={Link}
-                                                to={`/classes/${currClass.title}/assignments/${assignment.id}/view`}
+                                                to={`/students/classes/${currClass.title}/assignments/${assignment.id}/view`}
                                             >
                                                 View
                                             </Button>

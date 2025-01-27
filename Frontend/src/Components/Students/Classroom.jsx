@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { Link } from "react-router-dom";
-import Dashboard from "./Dashboard";
+import Dashboard from "../Dashboard";
 
 
 const classes = [
@@ -46,8 +46,8 @@ const classes = [
 ];
 
 const user = {
-  name: "User",
-  email: "",
+  name: "Student",
+  email: "student.viit.ac.in",
   role: "student",
 }
 
@@ -99,28 +99,11 @@ const Classroom = () => {
         </AppBar>
 
 
-        {/* Add Class Button if user is teacher then only show this button*/}
-        {user.role === "teacher" && (<Box display="flex" justifyContent="flex-end" mb={3}>
-          <Button component={StyledLink} to={"/add-class"}
-            variant="contained"
-            color="secondary"
-            size="large"
-            sx={{
-              fontWeight: "bold",
-              textTransform: "none",
-              borderRadius: "20px",
-              px: 4,
-              py: 1,
-            }}
-          >
-            + Add Class
-          </Button>
-        </Box>)}
         {/* Class Cards */}
         <Grid container spacing={4}>
           {classes.map((classItem, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
-              <StyledCard color={classItem.color} component={StyledLink} to={`/classes/${classItem.title}`} state={classItem}>
+              <StyledCard color={classItem.color} component={StyledLink} to={`/students/classes/${classItem.title}`} state={classItem}>
                 <CardContent>
                   <Typography
                     variant="h6"

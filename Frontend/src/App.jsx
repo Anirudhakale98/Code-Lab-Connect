@@ -1,9 +1,9 @@
-import Test from './Testing/Test';
+import React from 'react';
 
 export default function App() {
   return (
     <>
-    <Test />
+    <h1> Frontend Part is done </h1>
     </>
   )
 }

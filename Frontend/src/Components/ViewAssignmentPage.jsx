@@ -13,23 +13,28 @@ import {
   TableRow,
 } from "@mui/material";
 
-const ViewAssignmentPage = () => {
-  // Mock data (Replace with actual data from your backend or state)
-  const userInfo = {
-    name: "John Doe",
-    prn: "123456789",
-    rollNumber: "42",
-    division: "A",
-    subject: "Computer Science",
-  };
+// Mock data (Replace with actual data from your backend or state)
 
-  const assignmentData = {
-    title: "Write a Program to Calculate Factorial",
-    description: "Create a program that calculates the factorial of a given number.",
-    code: `function factorial(n) {\n  if (n === 0) return 1;\n  return n * factorial(n - 1);\n}`,
-    input: "5",
-    output: "120",
-  };
+const userInfo = {
+  name: "John Doe",
+  prn: "123456789",
+  rollNumber: "42",
+  division: "A",
+  subject: "Computer Science",
+};
+const assignmentData = {
+  title: "Write a Program to Calculate Factorial",
+  description: "Create a program that calculates the factorial of a given number.",
+  code: `function factorial(n) {\n  if (n === 0) return 1;\n  return n * factorial(n - 1);\n}`,
+  input: "5",
+  output: "120",
+};
+
+const ViewAssignmentPage = () => {
+
+  
+
+  
 
   return (
     <Box
