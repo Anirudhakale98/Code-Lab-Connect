@@ -13,7 +13,7 @@ const userSchema = new Schema(
         prn: {
             type: Number,
             unique: true,
-            required: [true, "PRN is required"],
+            
         },
         firstName: {
             type: String,
