@@ -14,7 +14,7 @@ const router = createBrowserRouter(
       <Route index element={<Navigate to="/login"/>} />
       <Route path="login" element={<LoginPage />} />
       <Route path="register" element={<RegisterPage />} />
-      <Route path="tour" element={<Navigate to="/students" />} />
+      <Route path="tour" element={<Navigate to="/" />} />
       <Route path="students/">
         <Route index element={<Classroom />} />
         <Route path="classes/">
@@ -29,9 +29,9 @@ const router = createBrowserRouter(
       </Route>
       <Route path="teachers/">
         <Route index element={<ClassroomT />} />
-        <Route path="classes">
-          <Route path=":title" element={<ClassroomPageT />} />
-          <Route path=":title/assignments/:assignmentId/" >
+        <Route path="classes/">
+          <Route path=":classroomId" element={<ClassroomPageT />} />
+          <Route path=":classroomId/assignments/:assignmentId/" >
             <Route index element={<AssignmentPageT />} />
             <Route path=":StudentName" element={<ViewAssignmentPage />} />
           </Route>

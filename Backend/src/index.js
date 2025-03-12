@@ -1,9 +1,9 @@
 import "dotenv/config";  // Loads environment variables
-import app from "./app.js";
+import {app} from "./app.js";
 import { connectDB } from "./db/index.db.js";
 
-const app = express();
-const PORT = process.env.PORT || 8080;
+
+const PORT = process.env.PORT || 3000;
 
 connectDB()
 .then(() => {

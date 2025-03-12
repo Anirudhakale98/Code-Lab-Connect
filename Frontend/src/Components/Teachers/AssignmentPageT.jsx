@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { styled } from "@mui/system";
 import {
   Box,
   Typography,
@@ -9,87 +10,115 @@ import {
   ListItem,
   ListItemText,
   Divider,
-  Button,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import axios from "axios";
 import Dashboard from "../Dashboard";
 
-const user = {
-  name: "User",
-  email: "",
-  role: "teacher",
-};
 
-const currClass = {
-  title: "Demo Classroom",
-  teacher: "This is for trial purposes",
-  description: "This classroom is to get familiar with the environment.",
-};
 
-const currAssignment = { 
-  id: 1, 
-  title: "Assignment 1", 
-  description: "This is a demo assignment to get familiar with the platform." 
-};
+// Styled Components
+const StyledCard = styled(Card)({
+  background: "linear-gradient(135deg, #607d8b, #455a64)",
+  color: "white",
+  borderRadius: "15px",
+  boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
+  padding: "16px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+});
 
-const submittedStudents = [
-  { id: 1, name: "Student A", prn: "1234567890", rollNo: "1" },
-  { id: 2, name: "Student B", prn: "1234567891", rollNo: "2" },
-];
-
-const notSubmittedStudents = [
-  { id: 3, name: "Student C", prn: "1234567892", rollNo: "3" },
-  { id: 4, name: "Student D", prn: "1234567893", rollNo: "4" },
-];
 
 const AssignmentPageT = () => {
+  const { classroomId, assignmentId } = useParams();
+  const [user, setUser] = useState({});
+  const [classes, setClasses] = useState([]);
+  const [currClass, setCurrClass] = useState({});
+  const [currAssignment, setCurrAssignment] = useState({});
+  const [submittedStudents, setSubmittedStudents] = useState([]);
+  const [notSubmittedStudents, setNotSubmittedStudents] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userRes = (await axios.get("/api/v1/users/me")).data;
+        // console.log("userRes: ", userRes);
+        setUser(userRes.data.user);
+
+        const classesRes = (await axios.get("/api/v1/teachers/classes")).data;
+        setClasses(classesRes.data.classes);
+
+        const currClassRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}`)).data;
+        setCurrClass(currClassRes.data.classroom);
+
+        const currAssignmentRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}`)).data;
+        setCurrAssignment(currAssignmentRes.data.assignment);
+
+        const studentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/students`)).data;
+        setSubmittedStudents(studentsRes.data.students || []);
+
+        const notSubmittedStudentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/notSubmittedStudents`).data);
+        setNotSubmittedStudents(notSubmittedStudentsRes.data.students || []);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [classroomId, assignmentId]);
+
+  if (!classes || classes.length === 0) {
+    return <Typography>Loading classes...</Typography>;
+  }
+  
+
   return (
     <Box display="flex">
-      {/* Sidebar */}
-      <Dashboard user={user} />
-
-      {/* Main Content */}
+      <Dashboard user={user} classes={classes} />
       <Box flexGrow={1} p={3} sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
+      <StyledCard>
         <Typography variant="h5" sx={{ fontWeight: "bold", mb: 3 }}>
           Assignment Details
         </Typography>
         <Typography variant="h6" sx={{ mb: 2 }}>
           Assignment Title: {currAssignment.title}
         </Typography>
+        </StyledCard>
 
-        <Grid container spacing={4}>
-          {/* Submitted Students Section */}
+        <Grid container spacing={4} mt={4}>
+          {/* Submitted Students */}
           <Grid item xs={12} md={6}>
             <Card sx={{ borderRadius: "10px", boxShadow: "0 6px 15px rgba(0, 0, 0, 0.1)" }}>
               <CardContent>
                 <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
                   Submitted Assignments
                 </Typography>
-
                 <List>
-                  {submittedStudents.map((student) => (
-                    <React.Fragment key={student.id}>
-                      <ListItem button component={Link} to={`/teachers/classes/${currClass.title}/assignments/${currAssignment.id}/${student.name}`}>
-                        <ListItemText
-                          primary={
-                            <Typography
-                              style={{ fontWeight: "bold", color: "#d32f2f" }}
-                            >
-                              {student.name}
-                            </Typography>
-                          }
-                          secondary={`PRN: ${student.prn} | Roll No: ${student.rollNo}`}
-                        />
-                      </ListItem>
-                      <Divider />
-                    </React.Fragment>
-                  ))}
+                  {submittedStudents.length > 0 ? (
+                    submittedStudents.map((student) => (
+                      <React.Fragment key={student.id}>
+                        <ListItem button component={Link} to={`/teachers/classes/${classroomId}/assignments/${assignmentId}/${student.id}`}>
+                          <ListItemText
+                            primary={<Typography sx={{ fontWeight: "bold", color: "#2e7d32" }}>{student.name}</Typography>}
+                            secondary={`PRN: ${student.prn} | Roll No: ${student.rollNo}`}
+                          />
+                        </ListItem>
+                        <Divider />
+                      </React.Fragment>
+                    ))
+                  ) : (
+                    <Typography color="textSecondary" sx={{ ml: 2 }}>
+                      No submissions yet.
+                    </Typography>
+                  )}
                 </List>
               </CardContent>
             </Card>
           </Grid>
 
-          {/* Not Submitted Students Section */}
+          {/* Not Submitted Students */}
           <Grid item xs={12} md={6}>
             <Card sx={{ borderRadius: "10px", boxShadow: "0 6px 15px rgba(0, 0, 0, 0.1)" }}>
               <CardContent>
@@ -97,23 +126,23 @@ const AssignmentPageT = () => {
                   Not Submitted Assignments
                 </Typography>
                 <List>
-                  {notSubmittedStudents.map((student) => (
-                    <React.Fragment key={student.id}>
-                      <ListItem>
-                        <ListItemText
-                          primary={
-                            <Typography
-                              style={{ fontWeight: "bold", color: "#d32f2f" }}
-                            >
-                              {student.name}
-                            </Typography>
-                          }
-                          secondary={`PRN: ${student.prn} | Roll No: ${student.rollNo}`}
-                        />
-                      </ListItem>
-                      <Divider />
-                    </React.Fragment>
-                  ))}
+                  {notSubmittedStudents.length > 0 ? (
+                    notSubmittedStudents.map((student) => (
+                      <React.Fragment key={student.id}>
+                        <ListItem>
+                          <ListItemText
+                            primary={<Typography sx={{ fontWeight: "bold", color: "#d32f2f" }}>{student.name}</Typography>}
+                            secondary={`PRN: ${student.prn} | Roll No: ${student.rollNo}`}
+                          />
+                        </ListItem>
+                        <Divider />
+                      </React.Fragment>
+                    ))
+                  ) : (
+                    <Typography color="textSecondary" sx={{ ml: 2 }}>
+                      All students have submitted.
+                    </Typography>
+                  )}
                 </List>
               </CardContent>
             </Card>

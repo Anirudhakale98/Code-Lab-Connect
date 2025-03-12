@@ -1,1 +1,1 @@
-export const DB_NAME = "CodeLabConnect";
+export const DB_NAME = "DBcodelabconnect";

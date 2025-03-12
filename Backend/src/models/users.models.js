@@ -2,31 +2,54 @@ import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+// Define user roles
+const userRoles = {
+    student: "student",
+    teacher: "teacher",
+    admin: "admin",
+};
+
+// Define the schema
 const userSchema = new Schema(
     {
+        firstName: {
+            type: String,
+            required: [true, "Name is required"],
+        },
+        lastName: {
+            type: String,
+            required: [true, "Name is required"],
+        },
         email: {
             type: String,
             unique: true,
             required: [true, "Email is required"],
             lowercase: true,
         },
+        password: {
+            type: String,
+            required: [true, "Password is required"], // Password is required for ALL
+        },
+        role: {
+            type: String,
+            enum: Object.values(userRoles), // Restrict role values
+            required: [true, "Role is required"],
+        },
         prn: {
             type: Number,
             unique: true,
-            
+            sparse: true, // Ensures uniqueness but allows multiple null values
         },
-        firstName: {
-            type: String,
-            required: [true, "First name is required"],
+        rollNo: {
+            type: Number,
+            sparse: true,
         },
-        lastName: {
-            type: String,
-            required: [true, "Last name is required"],
-        },
-        password: {
-            type: String,
-            required: [true, "Password is required"],
-        },
+        classes: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Classroom",
+            },
+        ],
         refreshToken: {
             type: String,
         },
@@ -34,25 +57,38 @@ const userSchema = new Schema(
     { timestamps: true }
 );
 
-// password comparison method
+// Validate student-specific fields
+userSchema.pre("validate", function (next) {
+    if (this.role === userRoles.STUDENT) {
+        if (!this.prn) {
+            return next(new Error("PRN is required for students."));
+        }
+        if (!this.rollNo) {
+            return next(new Error("Roll number is required for students."));
+        }
+    }
+    next();
+});
+
+// Hash password before saving
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });
 
-// add a method to the userSchema to compare passwords
+// Compare passwords
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
 
-// add a method to the userSchema to generate a access token
+// Generate Access Token
 userSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
             email: this.email,
-            prn: this.prn,
+            role: this.role,
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
@@ -61,7 +97,7 @@ userSchema.methods.generateAccessToken = function () {
     );
 };
 
-// add a method to the userSchema to generate a refresh token
+// Generate Refresh Token
 userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
         {

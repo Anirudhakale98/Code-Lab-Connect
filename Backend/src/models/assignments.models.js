@@ -2,6 +2,10 @@ import mongoose, { Schema } from "mongoose";
 
 const assignmentsSchema = new Schema(
   {
+    title:{
+      type: String,
+      required: [true, "Title is required"],
+    },
     description: {
       // question description
       type: String,
