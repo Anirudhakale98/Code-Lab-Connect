@@ -1,5 +1,5 @@
-import React from "react";
-import { Drawer, List, ListItem, ListItemText, Toolbar, Typography, Avatar, Button, Divider, Box } from "@mui/material";
+import React, { useState } from "react";
+import { Drawer, List, ListItem, ListItemText, Toolbar, Typography, Avatar, Button, Divider, Box, CircularProgress, Snackbar, Alert } from "@mui/material";
 import { styled } from "@mui/system";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -34,10 +34,12 @@ const StyledLink = styled(Link)({
 
 const Dashboard = ({ user = { firstName: "F", lastName: "L", role: "teacher" }, classes = [] }) => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleLogout = async() => {
-    // localStorage.removeItem("user");
-    // navigate("/login");
+  const handleLogout = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await axios.post("/api/v1/users/logout");
       if (response.status === 200) {
@@ -45,13 +47,15 @@ const Dashboard = ({ user = { firstName: "F", lastName: "L", role: "teacher" }, 
         navigate("/login");
       }
     } catch (error) {
+      setError("Failed to logout. Please try again.");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <StyledDrawer variant="permanent" anchor="left">
-      {/* User Info */}
       <Toolbar sx={{ display: "flex", alignItems: "center", px: 2 }}>
         <Avatar sx={{ bgcolor: "secondary.main", marginRight: 1 }}>
           {user.firstName[0]?.toUpperCase()}
@@ -62,7 +66,6 @@ const Dashboard = ({ user = { firstName: "F", lastName: "L", role: "teacher" }, 
         </Typography>
       </Toolbar>
 
-      {/* Navigation Links (Aligned to Top) */}
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
         <List>
           <ListItem button sx={hoverStyle} component={StyledLink} to={`/${user.role}s/`}>
@@ -82,13 +85,18 @@ const Dashboard = ({ user = { firstName: "F", lastName: "L", role: "teacher" }, 
         </List>
       </Box>
 
-      {/* Logout Button (Always at Bottom) */}
       <Box p={2}>
         <Divider sx={{ backgroundColor: "rgba(255,255,255,0.2)", mb: 2 }} />
-        <Button variant="contained" color="secondary" fullWidth onClick={handleLogout}>
-          Logout
+        <Button variant="contained" color="secondary" fullWidth onClick={handleLogout} disabled={loading}>
+          {loading ? <CircularProgress size={24} /> : "Logout"}
         </Button>
       </Box>
+
+      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
+        <Alert onClose={() => setError(null)} severity="error" sx={{ width: "100%" }}>
+          {error}
+        </Alert>
+      </Snackbar>
     </StyledDrawer>
   );
 };

@@ -76,7 +76,8 @@ const getAssignments = asyncHandler(async (req, res) => {
 // Add an assignment to a class
 const addAssignment = asyncHandler(async (req, res) => {
     const { classroomId } = req.params;
-    const { title, description, deadline, example } = req.body;
+    const { title, description, deadline, exampleInput, exampleOutuput } = req.body;
+    // console.log("req.body: ", req.body);
     if (!title || !description || !deadline) {
         throw new ApiError(400, "Please provide all details");
     }
@@ -88,7 +89,8 @@ const addAssignment = asyncHandler(async (req, res) => {
         title,
         description,
         deadline,
-        example,
+        "example.input": exampleInput,
+        "example.output": exampleOutuput,
         createdBy: req.user._id,
     });
     await classroom.assignments.push(newAssignment._id);
@@ -153,17 +155,35 @@ const getSubmittedStudents = asyncHandler(async (req, res) => {
 // Get all students who have not submitted an assignment
 const getNotSubmittedStudents = asyncHandler(async (req, res) => {
     const { classroomId, assignmentId } = req.params;
+
     const classroom = await Classroom.findOne({ classroomId });
     if (!classroom) {
         throw new ApiError(404, "Classroom not found");
     }
+
     const assignment = await Assignments.findOne({ _id: assignmentId });
     if (!assignment) {
         throw new ApiError(404, "Assignment not found");
     }
-    const students = await User.find({ _id: { $in: assignment.students } });
-    res.status(200).json(new ApiResponse(200, { students }));
+
+    // Fetch all students in the classroom
+    // console.log("classroom.students: ", classroom.students);
+    const students = await User.find({ _id: { $in: classroom.students } });
+    // console.log("students: ", students);
+    // Fetch submissions for the given assignment
+    const submissions = await Submissions.find({ assignmentId });
+
+    // Extract the IDs of students who have submitted
+    const submittedStudentIds = submissions.map((submission) => submission.studentId.toString());
+
+    // Filter out students who haven't submitted
+    const notSubmittedStudents = students.filter(
+        (student) => !submittedStudentIds.includes(student._id.toString())
+    );
+    // console.log("notSubmittedStudents: ", notSubmittedStudents);
+    res.status(200).json(new ApiResponse(200, { students: notSubmittedStudents }));
 });
+
 
 // Add marks to a submission
 const addMarks = asyncHandler(async (req, res) => {

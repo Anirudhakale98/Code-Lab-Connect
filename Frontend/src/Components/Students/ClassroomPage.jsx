@@ -6,7 +6,6 @@ import {
     Card,
     CardContent,
     Typography,
-    Avatar,
     Box,
     Button,
 } from "@mui/material";
@@ -14,7 +13,6 @@ import { styled } from "@mui/system";
 import { Link, useParams } from "react-router-dom";
 import Dashboard from "../Dashboard";
 import axios from "axios";
-import { use } from "react";
 
 const StyledCard = styled(Card)({
     background: "linear-gradient(135deg, #607d8b, #455a64)",
@@ -28,36 +26,31 @@ const StyledCard = styled(Card)({
 });
 
 const ClassroomPage = () => {
-    const classroomId = useParams().id;
+    const { id: classroomId } = useParams();
     const [classes, setClasses] = useState([]);
     const [currClass, setCurrClass] = useState(null);
     const [assignments, setAssignments] = useState([]);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // console.log("Fetching data for Classroom ID:", classroomId);
+                const [userRes, classesRes, classRes, assignmentsRes] = await Promise.all([
+                    axios.get("/api/v1/users/me"),
+                    axios.get("/api/v1/students/classes"),
+                    axios.get(`/api/v1/students/classes/${classroomId}`),
+                    axios.get(`/api/v1/students/classes/${classroomId}/assignments`)
+                ]);
 
-                // Fetch user details
-                const userResponse = (await axios.get("/api/v1/users/me")).data;
-                setUser(userResponse.data?.user);
-
-                // Fetch all classes
-                const classesResponse = (await axios.get("/api/v1/students/classes")).data;
-                setClasses(classesResponse.data || []); // ✅ Ensure this matches API response format
-
-                // Fetch current classroom details
-                const classResponse = (await axios.get(`/api/v1/students/classes/${classroomId}`)).data;
-                setCurrClass(classResponse.data.classroom);
-
-                // Fetch assignments for the current class
-                const assignmentsRes = (await axios.get(`/api/v1/students/classes/${classroomId}/assignments`)).data;
-                // console.log("Assignments:", assignmentsRes.data.assignments);
-                setAssignments(assignmentsRes.data.assignments);
+                setUser(userRes.data?.data?.user);
+                setClasses(classesRes.data?.data || []);
+                setCurrClass(classRes.data?.data?.classroom);
+                setAssignments(assignmentsRes.data?.data?.assignments || []);
             } catch (err) {
                 console.error("Error fetching data:", err);
+                setError("Failed to load classroom data.");
             } finally {
                 setLoading(false);
             }
@@ -67,13 +60,13 @@ const ClassroomPage = () => {
     }, [classroomId]);
 
     if (loading) return <Typography>Loading...</Typography>;
+    if (error) return <Typography color="error">{error}</Typography>;
     if (!currClass) return <Typography>Classroom not found.</Typography>;
     if (!user) return <Typography>User not found.</Typography>;
 
     return (
         <Box display="flex">
             <Dashboard user={user} classes={classes} />
-
             <Box flexGrow={1} p={3} sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
                 {/* Classroom Details */}
                 <StyledCard>

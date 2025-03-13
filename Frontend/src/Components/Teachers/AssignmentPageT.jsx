@@ -54,13 +54,15 @@ const AssignmentPageT = () => {
         setCurrClass(currClassRes.data.classroom);
 
         const currAssignmentRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}`)).data;
+        // console.log("Assignment: ", currAssignmentRes.data.assignment);
         setCurrAssignment(currAssignmentRes.data.assignment);
-
+        
         const submittedStudentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/students`)).data;
         // console.log("Submitted Students: ", submittedStudentsRes.data.students);
         setSubmittedStudents(submittedStudentsRes.data.students || []);
 
-        const notSubmittedStudentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/notSubmittedStudents`).data);
+        const notSubmittedStudentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/notSubmittedStudents`)).data;
+        // console.log("Not Submitted Students: ", notSubmittedStudentsRes.data.students); 
         setNotSubmittedStudents(notSubmittedStudentsRes.data.students || []);
 
       } catch (error) {
@@ -84,7 +86,7 @@ const AssignmentPageT = () => {
       <Box flexGrow={1} p={3} sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
       <StyledCard>
         <Typography variant="h5" sx={{ fontWeight: "bold", mb: 3 }}>
-          Assignment Details
+          {currClass.title}
         </Typography>
         <Typography variant="h6" sx={{ mb: 2 }}>
           Assignment Title: {currAssignment.title}

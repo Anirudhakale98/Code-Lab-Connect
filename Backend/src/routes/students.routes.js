@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
-import { getClasses, joinClass, getClassroom, getAssignments, getAssignment, runCode, submitAssignment, getSubmission} from "../controllers/students.controllers.js";
+import { getClasses, joinClass, deleteClass, getClassroom, getAssignments, getAssignment, runCode, submitAssignment, getSubmission} from "../controllers/students.controllers.js";
 
 
 
@@ -8,6 +8,7 @@ const router = Router();
 
 router.route("/classes").get(verifyJWT, getClasses);
 router.route("/join").post(verifyJWT, joinClass);
+router.route("/classes/:classroomId/delete").post(verifyJWT, deleteClass);
 router.route("/classes/:classroomId").get(verifyJWT, getClassroom);
 router.route("/classes/:classroomId/assignments").get(verifyJWT, getAssignments);
 router.route("/classes/:classroomId/assignments/:assignmentId").get(verifyJWT, getAssignment);

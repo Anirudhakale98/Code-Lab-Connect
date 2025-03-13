@@ -17,6 +17,9 @@ app.use(express.static("public"));
 app.use(methodOverride("_method"));
 app.use(cookieParser());
 
+
+
+
 //routes import
 import userRouter from "./routes/users.routes.js";
 import teacherRouter from "./routes/teachers.routes.js";

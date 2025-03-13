@@ -30,14 +30,12 @@ const ViewAssignmentPage = () => {
     const fetchAssignment = async () => {
       setLoading(true);
       try {
-        const studentResponce = (await axios.get(`/api/v1/users/${studentId}`)).data;
-        // console.log("studentResponce: ", studentResponce.data);
-        setCurrStudent(studentResponce.data.user);
+        const studentResponse = (await axios.get(`/api/v1/users/${studentId}`)).data;
+        setCurrStudent(studentResponse.data.user);
 
         const assignmentResponse = (await axios.get(
           `/api/v1/students/classes/${classroomId}/assignments/${assignmentId}`
         )).data;
-        // console.log("assignmentResponse: ", assignmentResponse.data);
         setCurrAssignment(assignmentResponse.data.assignment);
 
         const submissionResponse = await axios.get(
@@ -59,7 +57,7 @@ const ViewAssignmentPage = () => {
   };
 
   const submitMarks = async () => {
-    if(!marks){
+    if (!marks) {
       alert("Please enter marks");
       return;
     }
@@ -94,15 +92,7 @@ const ViewAssignmentPage = () => {
   }
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        width: "100%",
-      }}
-    >
+    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100%" }}>
       <Grid container spacing={3} sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", p: 3, width: "50%" }}>
         <Grid item xs={12}>
           <Paper elevation={3} sx={{ p: 3, borderRadius: "10px", backgroundColor: "#ffffff" }}>
@@ -111,6 +101,7 @@ const ViewAssignmentPage = () => {
             </Typography>
             <Divider sx={{ my: 2 }} />
 
+            {/* User Information Section */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="h5" gutterBottom>
                 User Information
@@ -119,42 +110,37 @@ const ViewAssignmentPage = () => {
                 <Table>
                   <TableBody>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: "bold", width: "30%" }}>
-                        First Name:
-                      </TableCell>
-                      <TableCell>{`${currStudent.firstName}`}</TableCell>
-                      <TableCell sx={{ fontWeight: "bold", width: "30%" }}>
-                        Last Name:
-                      </TableCell>
-                      <TableCell>{`${currStudent.lastName}`}</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>First Name:</TableCell>
+                      <TableCell>{currStudent.firstName}</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Last Name:</TableCell>
+                      <TableCell>{currStudent.lastName}</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: "bold", width: "30%" }}>
-                        Email
-                      </TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Email:</TableCell>
                       <TableCell>{currStudent.email}</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: "bold", width: "30%" }}>
-                        PRN 
-                      </TableCell>
-                      <TableCell>{`${currStudent.prn}`}</TableCell>
-                      <TableCell sx={{ fontWeight: "bold", width: "30%" }}>
-                        Roll No
-                      </TableCell>
-                      <TableCell>{`${currStudent.rollNo}`}</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>PRN:</TableCell>
+                      <TableCell>{currStudent.prn}</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Roll No:</TableCell>
+                      <TableCell>{currStudent.rollNo}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: "bold" }}>Marks Obtained:</TableCell>
+                      <TableCell>{submission.marks ? submission.marks : "Not Graded Yet"}</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
             </Box>
 
+            {/* Assignment Details Section */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="h5" gutterBottom>
                 Assignment Details
               </Typography>
               <Typography variant="h6" gutterBottom>
-                Title: {currAssignment.title} {submission.marks && <span>Marks: ({submission.marks} marks)</span>}
+                Title: {currAssignment.title} {submission.marks && <span>({submission.marks} marks)</span>}
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
                 Assignment Description: <br />
@@ -162,6 +148,7 @@ const ViewAssignmentPage = () => {
               </Typography>
             </Box>
 
+            {/* Code Section */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="h5" gutterBottom>
                 Code
@@ -171,6 +158,7 @@ const ViewAssignmentPage = () => {
               </Paper>
             </Box>
 
+            {/* Input and Output Section */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="h5" gutterBottom>
                 Input
@@ -186,6 +174,7 @@ const ViewAssignmentPage = () => {
               </Paper>
             </Box>
 
+            {/* Marks Input and Submit Button */}
             <Box sx={{ mt: 3 }}>
               <TextField
                 label="Marks"

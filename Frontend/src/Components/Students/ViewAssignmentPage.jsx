@@ -35,13 +35,14 @@ const ViewAssignmentPage = () => {
         const assignmentResponse = await axios.get(
           `/api/v1/students/classes/${classroomId}/assignments/${assignmentId}`
         );
-        // console.log("Assignment:", assignmentResponse.data.data.assignment); // Debug
+        console.log("Assignment:", assignmentResponse.data.data.assignment); // Debug
         setCurrAssignment(assignmentResponse.data.data.assignment);
 
         // Fetch submission details
         const submissionResponse = await axios.get(
           `/api/v1/students/classes/${classroomId}/assignments/${assignmentId}/submissions/${studentId}`, 
         );
+        // console.log("Submission:", submissionResponse.data.data.submission); // Debug
         setSubmission(submissionResponse.data.data.submission);
       } catch (error) {
         console.error("Error fetching data:", error);

@@ -4,10 +4,10 @@ import {
   Typography,
   Button,
   TextField,
-  MenuItem,
   IconButton,
   InputAdornment,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
@@ -28,27 +28,30 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // For redirecting after login
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
-    setError(null); // Clear previous errors
+    setError(null);
+    setLoading(true);
 
     try {
-      const response = await axios.post("/api/v1/users/login", {
-        email,
-        password,
-      });
-
+      const response = await axios.post("/api/v1/users/login", { email, password });
       if (response.status === 200) {
-        // if role is student, redirect to /students
-        // else redirect to /teachers
-        // console.log(response.data.data.user.role);
-        if(response.data?.data?.user?.role === "student") navigate(`/students`);
-        else navigate(`/teachers`);
+        const role = response.data?.data?.user?.role;
+        navigate(role === "student" ? "/students" : "/teachers");
       }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleTour = () => {
+    setEmail("student@example.com");
+    setPassword("student@123");
+    setError("You can use these credentials to take a tour.");
   };
 
   return (
@@ -102,12 +105,13 @@ const LoginPage = () => {
           color="primary"
           sx={{ mt: 2, mb: 1 }}
           onClick={handleLogin}
+          disabled={loading}
         >
-          Log In
+          {loading ? <CircularProgress size={24} /> : "Log In"}
         </Button>
 
         <Box display="flex" justifyContent="space-between">
-          <Button component={Link} to="/tour" color="secondary">
+          <Button onClick={handleTour} color="secondary">
             Take a Tour
           </Button>
           <Button component={Link} to="/register" color="secondary">

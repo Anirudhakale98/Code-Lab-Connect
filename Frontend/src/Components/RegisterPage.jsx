@@ -7,8 +7,10 @@ import {
   MenuItem,
   IconButton,
   InputAdornment,
+  Snackbar,
   Alert,
-  Grid, // ✅ Added Grid
+  Grid,
+  CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -25,21 +27,30 @@ const themeStyle = {
 };
 
 const RegisterPage = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("student");
-  const [prn, setPrn] = useState("");
-  const [rollNumber, setRollNumber] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    role: "student",
+    prn: "",
+    rollNumber: "",
+    password: "",
+  });
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "" });
+
   const navigate = useNavigate();
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleRegister = async () => {
-    setError(null);
-    setSuccess(null);
+    setLoading(true);
+
+    const { firstName, lastName, email, role, prn, rollNumber, password } = formData;
 
     const userData = {
       firstName,
@@ -48,19 +59,24 @@ const RegisterPage = () => {
       role,
       password,
       prn: role === "student" ? prn : null,
-      rollNo: role === "student" ? rollNumber : null
+      rollNo: role === "student" ? rollNumber : null,
     };
 
     try {
       const response = await axios.post("/api/v1/users/register", userData);
-
       if (response.status === 201) {
-        setSuccess("Registration successful! Redirecting...");
+        setSnackbar({ open: true, message: "Registration successful! Redirecting...", severity: "success" });
         setTimeout(() => navigate("/login"), 2000);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed. Please try again.");
+      setSnackbar({ open: true, message: err.response?.data?.message || "Registration failed. Try again.", severity: "error" });
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ open: false, message: "", severity: "" });
   };
 
   return (
@@ -79,18 +95,15 @@ const RegisterPage = () => {
           Register
         </Typography>
 
-        {error && <Alert severity="error">{error}</Alert>}
-        {success && <Alert severity="success">{success}</Alert>}
-
-        {/* First Name & Last Name in one line */}
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <TextField
               fullWidth
               label="First Name"
               margin="normal"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
             />
           </Grid>
           <Grid item xs={6}>
@@ -98,8 +111,9 @@ const RegisterPage = () => {
               fullWidth
               label="Last Name"
               margin="normal"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
             />
           </Grid>
         </Grid>
@@ -109,31 +123,34 @@ const RegisterPage = () => {
           label="Email"
           type="email"
           margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
         />
 
         <TextField
           select
           fullWidth
           label="Role"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
+          name="role"
+          value={formData.role}
+          onChange={handleChange}
           margin="normal"
         >
           <MenuItem value="student">Student</MenuItem>
           <MenuItem value="teacher">Teacher</MenuItem>
         </TextField>
 
-        {role === "student" && (
+        {formData.role === "student" && (
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
                 fullWidth
                 label="PRN Number"
                 margin="normal"
-                value={prn}
-                onChange={(e) => setPrn(e.target.value)}
+                name="prn"
+                value={formData.prn}
+                onChange={handleChange}
               />
             </Grid>
             <Grid item xs={6}>
@@ -141,8 +158,9 @@ const RegisterPage = () => {
                 fullWidth
                 label="Roll Number"
                 margin="normal"
-                value={rollNumber}
-                onChange={(e) => setRollNumber(e.target.value)}
+                name="rollNumber"
+                value={formData.rollNumber}
+                onChange={handleChange}
               />
             </Grid>
           </Grid>
@@ -153,8 +171,9 @@ const RegisterPage = () => {
           label="Password"
           type={passwordVisible ? "text" : "password"}
           margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -172,10 +191,21 @@ const RegisterPage = () => {
           color="primary"
           sx={{ mt: 2 }}
           onClick={handleRegister}
+          disabled={loading}
         >
-          Register
+          {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Register"}
         </Button>
       </Box>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

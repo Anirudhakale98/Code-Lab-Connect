@@ -3,9 +3,9 @@ import {
   AppBar, Toolbar, Grid, Card, CardContent, Avatar, Typography,
   Box, Button, TextField, Modal, IconButton
 } from "@mui/material";
-import { Close as CloseIcon } from "@mui/icons-material";
+import { Close as CloseIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { styled } from "@mui/system";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import Dashboard from "../Dashboard";
 import axios from "axios";
 
@@ -22,34 +22,28 @@ const StyledCard = styled(Card)(({ color }) => ({
   "&:hover": {
     transform: "translateY(-8px)",
     boxShadow: "0 12px 30px rgba(0, 0, 0, 0.3)",
+    cursor: "pointer", // Add cursor pointer to indicate clickable
   },
 }));
 
-const StyledLink = styled(Link)({
-  textDecoration: "none",
-  color: "inherit",
-});
-
-const ClassroomS = () => {
+const Classroom = () => {
   const [classes, setClasses] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [classroomId, setClassroomId] = useState("");
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const userResponse = (await axios.get("/api/v1/users/me")).data;
-        setUser(userResponse.data.user); // ✅ Ensure this matches API response format
+        setUser(userResponse.data.user);
 
         const classesResponse = (await axios.get("/api/v1/students/classes")).data;
-        setClasses(classesResponse.data || []); // ✅ Ensure this matches API response format
+        setClasses(classesResponse.data || []);
       } catch (err) {
         console.error("Error fetching data:", err);
-      }finally{
-        setLoading(false);
       }
     };
 
@@ -62,9 +56,9 @@ const ClassroomS = () => {
       return;
     }
     try {
-      const res = await axios.post("/api/v1/students/join", { classroomId });
-      if (res.data.classroom) {
-        setClasses((prevClasses) => [...prevClasses, res.data.classroom]); // ✅ Update state instead of reloading
+      const res = (await axios.post("/api/v1/students/join", { classroomId })).data;
+      if (res.data) {
+        setClasses((prevClasses) => [...prevClasses, res.data]);
       }
       setClassroomId("");
       setError("");
@@ -75,7 +69,26 @@ const ClassroomS = () => {
     }
   };
 
-  if (loading) return <Typography>Loading...</Typography>;
+  const handleDeleteClass = async (classroomId) => {
+    try {
+      const deletedClassRes = (await axios.post(`/api/v1/students/classes/${classroomId}/delete`)).data;
+      setClasses((prevClasses) => prevClasses.filter((c) => c.classroomId !== classroomId));
+    } catch (err) {
+      console.error("Error deleting class:", err);
+    }
+  };
+
+  const handleModalClose = () => {
+    setOpenModal(false);
+    setClassroomId(""); // Clear the class code input field
+    setError(""); // Clear any existing error message
+  };
+
+  const handleCardClick = (classroomId) => {
+    navigate(`/students/classes/${classroomId}`); // Navigate to the class page
+  };
+
+  if (!user) return <Typography>Loading...</Typography>;
 
   return (
     <Box display="flex">
@@ -100,20 +113,31 @@ const ClassroomS = () => {
         <Grid container spacing={4}>
           {classes.map((classItem, index) => (
             <Grid item xs={12} sm={6} md={4} key={classItem.classroomId || index}>
-              <StyledCard color={classItem.color} component={StyledLink} to={`/students/classes/${classItem.classroomId}`} state={classItem}>
+              <StyledCard
+                color={classItem.color}
+                onClick={() => handleCardClick(classItem.classroomId)} // Handle navigation
+              >
                 <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1, textShadow: "1px 1px 2px rgba(0, 0, 0, 0.2)" }}>
-                    {classItem.title}
-                  </Typography>
-                  <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
-                    {classItem.teacher}
-                  </Typography>
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                      {classItem.title}
+                    </Typography>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click when delete icon is clicked
+                        handleDeleteClass(classItem.classroomId);
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                  <Typography variant="subtitle1">{classItem.teacher}</Typography>
                 </CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="center" px={2} pb={2}>
                   <Avatar sx={{ bgcolor: "#ffffff", color: "#000", fontWeight: "bold" }}>
                     {classItem.title[0]}
                   </Avatar>
-                  <Typography variant="body2" sx={{ fontStyle: "italic", color: "rgba(255, 255, 255, 0.9)" }}>
+                  <Typography variant="body2" sx={{ fontStyle: "italic", color: "rgba(244, 236, 236, 0.9)" }}>
                     {classItem.description}
                   </Typography>
                 </Box>
@@ -123,11 +147,11 @@ const ClassroomS = () => {
         </Grid>
 
         {/* Modal for Joining a Class */}
-        <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <Modal open={openModal} onClose={handleModalClose}>
           <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", bgcolor: "white", p: 4, borderRadius: "10px", boxShadow: 24, width: "400px" }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h6">Join a Classroom</Typography>
-              <IconButton onClick={() => setOpenModal(false)}>
+              <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
             </Box>
@@ -147,9 +171,10 @@ const ClassroomS = () => {
             </Box>
           </Box>
         </Modal>
+
       </Box>
     </Box>
   );
 };
 
-export default ClassroomS;
+export default Classroom;

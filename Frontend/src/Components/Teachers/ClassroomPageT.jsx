@@ -67,6 +67,7 @@ const ClassroomPageT = () => {
     }, [classroomId]);
 
     const handleOpenDialog = () => setIsDialogOpen(true);
+
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
         setNewAssignment({ title: "", description: "", deadline: "", exampleInput: "", exampleOutput: "" });

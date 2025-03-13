@@ -37,7 +37,25 @@ const joinClass = asyncHandler(async (req, res) => {
         throw new ApiError(400, "You are already in this class.");
     user.classes.push(classroom._id);
     await user.save();
+    classroom.students.push(user._id);
+    await classroom.save();
     res.status(201).json(new ApiResponse(201, classroom));
+});
+
+// Delete a class
+const deleteClass = asyncHandler(async (req, res) => {
+    const { classroomId } = req.params;
+    // console.log("classroomId", classroomId);
+    const user = await User.findById(req.user._id);
+    const classroom = await Classroom.findOne({ classroomId: classroomId });
+    if (!classroom) throw new ApiError(404, "Classroom not found.");
+    if (!user.classes.includes(classroom._id))
+        throw new ApiError(400, "You are not in this class.");
+
+    // Remove the class from the user's classes
+    user.classes = user.classes.filter((id) => id.toString() !== classroom._id.toString());
+    await user.save();
+    res.status(200).json(new ApiResponse(200, "Class deleted successfully."));
 });
 
 // Get a class
@@ -156,6 +174,7 @@ const getSubmission = asyncHandler(async (req, res) => {
 export {
     getClasses,
     joinClass,
+    deleteClass,
     getClassroom,
     getAssignments,
     getAssignment,
