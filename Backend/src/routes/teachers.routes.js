@@ -9,8 +9,9 @@ import {
     addAssignment,
     deleteAssignment,
     getAssignment,
-    getStudents,
+    getSubmittedStudents,
     getNotSubmittedStudents,
+    addMarks,
 } from "../controllers/teachers.controllers.js";
 const router = Router();
 
@@ -33,11 +34,15 @@ router
     .get(verifyJWT, getAssignment);
 router
     .route("/classes/:classroomId/assignments/:assignmentId/students")
-    .get(verifyJWT, getStudents);
+    .get(verifyJWT, getSubmittedStudents);
 router
     .route(
         "/classes/:classroomId/assignments/:assignmentId/notSubmittedStudents"
     )
     .get(verifyJWT, getNotSubmittedStudents);
+
+router.
+    route("/classes/:classroomId/assignments/:assignmentId/submissions/:submissionId/marks")
+    .post(verifyJWT, addMarks);
 
 export default router;

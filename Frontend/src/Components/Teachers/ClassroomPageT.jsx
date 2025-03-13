@@ -37,7 +37,7 @@ const ClassroomPageT = () => {
     const { classroomId } = useParams();
     const [assignments, setAssignments] = useState([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [newAssignment, setNewAssignment] = useState({ title: "", description: "", deadline: "" });
+    const [newAssignment, setNewAssignment] = useState({ title: "", description: "", deadline: "", exampleInput: "", exampleOutput: "" });
     const [currClass, setCurrClass] = useState(null);
     const [currUser, setCurrUser] = useState(null);
     const [classes, setClasses] = useState([]);
@@ -69,7 +69,7 @@ const ClassroomPageT = () => {
     const handleOpenDialog = () => setIsDialogOpen(true);
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
-        setNewAssignment({ title: "", description: "", deadline: "" });
+        setNewAssignment({ title: "", description: "", deadline: "", exampleInput: "", exampleOutput: "" });
         setError("");
     };
 
@@ -174,42 +174,18 @@ const ClassroomPageT = () => {
                                 {error}
                             </Typography>
                         )}
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            label="Assignment Title"
-                            fullWidth
-                            value={newAssignment.title}
-                            onChange={(e) => setNewAssignment({ ...newAssignment, title: e.target.value })}
-                        />
-                        <TextField
-                            margin="dense"
-                            label="Assignment Description"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            value={newAssignment.description}
-                            onChange={(e) => setNewAssignment({ ...newAssignment, description: e.target.value })}
-                        />
+                        <TextField autoFocus margin="dense" label="Assignment Title" fullWidth value={newAssignment.title} onChange={(e) => setNewAssignment({ ...newAssignment, title: e.target.value })} />
+                        <TextField margin="dense" label="Assignment Description" fullWidth multiline rows={4} value={newAssignment.description} onChange={(e) => setNewAssignment({ ...newAssignment, description: e.target.value })} />
                         <FormControl fullWidth margin="dense">
                             <FormLabel>Deadline</FormLabel>
-                            <TextField
-                                type="datetime-local"
-                                value={newAssignment.deadline || ""}
-                                onChange={(e) => setNewAssignment({ ...newAssignment, deadline: e.target.value })}
-                                inputProps={{
-                                    min: new Date().toISOString().split("T")[0] + "T00:00",
-                                }}
-                            />
+                            <TextField type="datetime-local" value={newAssignment.deadline || ""} onChange={(e) => setNewAssignment({ ...newAssignment, deadline: e.target.value })} inputProps={{ min: new Date().toISOString().split("T")[0] + "T00:00" }} />
                         </FormControl>
+                        <TextField margin="dense" label="Example Input" fullWidth value={newAssignment.exampleInput} onChange={(e) => setNewAssignment({ ...newAssignment, exampleInput: e.target.value })} />
+                        <TextField margin="dense" label="Example Output" fullWidth value={newAssignment.exampleOutput} onChange={(e) => setNewAssignment({ ...newAssignment, exampleOutput: e.target.value })} />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleCloseDialog} color="secondary">
-                            Cancel
-                        </Button>
-                        <Button onClick={handleAddAssignment} sx={{ backgroundColor: "#0288d1", color: "#fff" }}>
-                            Add
-                        </Button>
+                        <Button onClick={handleCloseDialog} color="secondary">Cancel</Button>
+                        <Button onClick={handleAddAssignment} sx={{ backgroundColor: "#0288d1", color: "#fff" }}>Add</Button>
                     </DialogActions>
                 </Dialog>
             </Box>

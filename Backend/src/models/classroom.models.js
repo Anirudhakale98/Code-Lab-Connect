@@ -42,7 +42,6 @@ const classroomSchema = new Schema(
     },
     students: [{ type: Schema.Types.ObjectId, ref: "User" }],
     assignments: [{ type: Schema.Types.ObjectId, ref: "Assignment" }],
-    submissions: [{ type: Schema.Types.ObjectId, ref: "Submission" }],
   },
   { timestamps: true }
 );

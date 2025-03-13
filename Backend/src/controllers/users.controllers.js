@@ -131,4 +131,17 @@ const getMe = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, { user }, "User details fetched successfully"));
 });
 
-export { registerUser, loginUser, logoutUser, getMe};
+// get user profile
+const getUser = asyncHandler(async (req, res) => {
+    const { id } = req.params; // Correctly extract the ID
+    // console.log("req.params: ", req.params);
+    // console.log("id: ", id);
+    const user = await User.findById(id).select("-password -refreshToken");
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+    res.status(200).json(new ApiResponse(200, { user }, "User details fetched successfully"));
+});
+
+
+export { registerUser, loginUser, logoutUser, getMe, getUser };

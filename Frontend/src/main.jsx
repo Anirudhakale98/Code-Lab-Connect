@@ -2,9 +2,8 @@ import React, { createElement } from 'react'
 import { Route, Navigate } from 'react-router-dom'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router-dom'
-import {ClassroomPage, Classroom, AssignmentPage} from './Components/Students/index.jsx'
-import {ClassroomT,ClassroomPageT,AssignmentPageT} from './Components/Teachers/index.jsx'
-import ViewAssignmentPage from './Components/ViewAssignmentPage.jsx'
+import {ClassroomPage, Classroom, AssignmentPage, ViewAssignmentPage} from './Components/Students/index.jsx'
+import {ClassroomT,ClassroomPageT,AssignmentPageT, ViewAssignmentPageT} from './Components/Teachers/index.jsx'
 import LoginPage from './Components/LoginPage.jsx'
 import RegisterPage from './Components/RegisterPage.jsx'
 
@@ -33,7 +32,7 @@ const router = createBrowserRouter(
           <Route path=":classroomId" element={<ClassroomPageT />} />
           <Route path=":classroomId/assignments/:assignmentId/" >
             <Route index element={<AssignmentPageT />} />
-            <Route path=":StudentName" element={<ViewAssignmentPage />} />
+            <Route path="view/:studentId" element={<ViewAssignmentPageT />} />
           </Route>
         </Route>
       </Route>

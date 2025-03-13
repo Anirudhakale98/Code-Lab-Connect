@@ -21,6 +21,7 @@ const assignmentsSchema = new Schema(
         Output: String,
       },
     },
+    submissions: [{ type: Schema.Types.ObjectId, ref: "Submission" }],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "Teacher",

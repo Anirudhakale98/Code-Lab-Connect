@@ -36,6 +36,7 @@ const ClassroomS = () => {
   const [classroomId, setClassroomId] = useState("");
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +48,8 @@ const ClassroomS = () => {
         setClasses(classesResponse.data || []); // ✅ Ensure this matches API response format
       } catch (err) {
         console.error("Error fetching data:", err);
+      }finally{
+        setLoading(false);
       }
     };
 
@@ -72,7 +75,7 @@ const ClassroomS = () => {
     }
   };
 
-  if (!user) return <Typography>Loading...</Typography>;
+  if (loading) return <Typography>Loading...</Typography>;
 
   return (
     <Box display="flex">

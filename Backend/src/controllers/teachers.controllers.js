@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { Classroom } from "../models/classroom.models.js";
 import { User } from "../models/users.models.js";
 import { Assignments } from "../models/assignments.models.js";
+import { Submissions } from "../models/submission.models.js";
 
 // Get all classes
 const getClasses = asyncHandler(async (req, res) => {
@@ -106,9 +107,9 @@ const deleteAssignment = asyncHandler(async (req, res) => {
     if (!assignment) {
         throw new ApiError(404, "Assignment not found");
     }
-    await classroom.assignments.remove(assignment._id);
+    const deletedAssignemnt = await Assignments.deleteOne({ _id: assignmentId });
+    await classroom.assignments.remove(deleteAssignment._id);
     await classroom.save();
-    await Assignments.deleteOne({ assignmentId });
     res.status(200).json(
         new ApiResponse(200, { message: "Assignment deleted" })
     );
@@ -129,7 +130,7 @@ const getAssignment = asyncHandler(async (req, res) => {
 });
 
 // Get all students of an assignment
-const getStudents = asyncHandler(async (req, res) => {
+const getSubmittedStudents = asyncHandler(async (req, res) => {
     const { classroomId, assignmentId } = req.params;
     const classroom = await Classroom.findOne({ classroomId });
     if (!classroom) {
@@ -139,8 +140,14 @@ const getStudents = asyncHandler(async (req, res) => {
     if (!assignment) {
         throw new ApiError(404, "Assignment not found");
     }
-    const students = await User.find({ _id: { $in: assignment.students } });
+    const submissionRes = await Submissions
+        .find({ assignmentId: assignmentId })
+        .populate("studentId");
+    // console.log("submissionRes: ", submissionRes);
+
+    const students = submissionRes.map((submission) => submission.studentId);
     res.status(200).json(new ApiResponse(200, { students }));
+    
 });
 
 // Get all students who have not submitted an assignment
@@ -158,6 +165,19 @@ const getNotSubmittedStudents = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, { students }));
 });
 
+// Add marks to a submission
+const addMarks = asyncHandler(async (req, res) => {
+    const { classroomId, assignmentId, submissionId } = req.params;
+    const { marks } = req.body || 0;
+    const submission = await Submissions.findOne({ _id: submissionId });
+    if (!submission) {
+        throw new ApiError(404, "Submission not found");
+    }
+    submission.marks = marks;
+    await submission.save();
+    res.status(200).json(new ApiResponse(200, { submission }));
+});
+
 export {
     getClasses,
     addClass,
@@ -167,6 +187,7 @@ export {
     addAssignment,
     deleteAssignment,
     getAssignment,
-    getStudents,
+    getSubmittedStudents,
     getNotSubmittedStudents,
+    addMarks
 };

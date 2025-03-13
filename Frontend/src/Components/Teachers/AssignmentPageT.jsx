@@ -38,6 +38,7 @@ const AssignmentPageT = () => {
   const [currAssignment, setCurrAssignment] = useState({});
   const [submittedStudents, setSubmittedStudents] = useState([]);
   const [notSubmittedStudents, setNotSubmittedStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,22 +56,25 @@ const AssignmentPageT = () => {
         const currAssignmentRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}`)).data;
         setCurrAssignment(currAssignmentRes.data.assignment);
 
-        const studentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/students`)).data;
-        setSubmittedStudents(studentsRes.data.students || []);
+        const submittedStudentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/students`)).data;
+        // console.log("Submitted Students: ", submittedStudentsRes.data.students);
+        setSubmittedStudents(submittedStudentsRes.data.students || []);
 
         const notSubmittedStudentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/notSubmittedStudents`).data);
         setNotSubmittedStudents(notSubmittedStudentsRes.data.students || []);
 
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [classroomId, assignmentId]);
 
-  if (!classes || classes.length === 0) {
-    return <Typography>Loading classes...</Typography>;
+  if (loading) {
+    return <Typography>Loading data...</Typography>;
   }
   
 
@@ -99,7 +103,7 @@ const AssignmentPageT = () => {
                   {submittedStudents.length > 0 ? (
                     submittedStudents.map((student) => (
                       <React.Fragment key={student.id}>
-                        <ListItem button component={Link} to={`/teachers/classes/${classroomId}/assignments/${assignmentId}/${student.id}`}>
+                        <ListItem button component={Link} to={`/teachers/classes/${classroomId}/assignments/${assignmentId}/view/${student._id}`}>
                           <ListItemText
                             primary={<Typography sx={{ fontWeight: "bold", color: "#2e7d32" }}>{student.name}</Typography>}
                             secondary={`PRN: ${student.prn} | Roll No: ${student.rollNo}`}

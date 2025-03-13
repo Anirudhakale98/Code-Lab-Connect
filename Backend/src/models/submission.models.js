@@ -4,6 +4,7 @@ const submissionSchema = new Schema(
   {
     assignmentId: {
       type: Schema.Types.ObjectId,
+      // unique: true,
       ref: "Assignments",
       required: [true, "Assignment ID is required"],
     },
