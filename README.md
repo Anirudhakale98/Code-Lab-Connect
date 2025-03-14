@@ -1,6 +1,6 @@
 # Code Lab Connect
 
-![Code Lab Connect](https://code-lab-connect.vercel.app/og-image.png)
+![Code Lab Connect](https://github.com/Anirudhakale98/Code-Lab-Connect/blob/main/imges/Code%20editor.png)
 
 ## Project Details
 
