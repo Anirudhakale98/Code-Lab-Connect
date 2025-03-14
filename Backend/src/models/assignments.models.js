@@ -15,11 +15,11 @@ const assignmentsSchema = new Schema(
       type: Date,
       required: [true, "Deadline is required"],
     },
-    exmple: {
-      type: {
-        Input: String,
-        Output: String,
-      },
+    "example.input": {
+      type: String,
+    },
+    "example.output": {
+      type: String,
     },
     submissions: [{ type: Schema.Types.ObjectId, ref: "Submission" }],
     createdBy: {

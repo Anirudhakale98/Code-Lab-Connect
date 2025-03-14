@@ -38,7 +38,7 @@ const RegisterPage = () => {
   });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "" });
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -48,9 +48,16 @@ const RegisterPage = () => {
   };
 
   const handleRegister = async () => {
+    setError(null);
     setLoading(true);
 
     const { firstName, lastName, email, role, prn, rollNumber, password } = formData;
+
+    if (!firstName || !lastName || !email || !password) {
+      setError("All required fields must be provided");
+      setLoading(false);
+      return;
+    }
 
     const userData = {
       firstName,
@@ -65,18 +72,12 @@ const RegisterPage = () => {
     try {
       const response = await axiosInstance.post("/api/v1/users/register", userData);
       if (response.status === 201) {
-        setSnackbar({ open: true, message: "Registration successful! Redirecting...", severity: "success" });
-        setTimeout(() => navigate("/login"), 2000);
+        navigate("/login");
       }
     } catch (err) {
-      setSnackbar({ open: true, message: err.response?.data?.message || "Registration failed. Try again.", severity: "error" });
-    } finally {
+      setError(err.response?.data?.message || "Registration failed. Try again.");
       setLoading(false);
     }
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ open: false, message: "", severity: "" });
   };
 
   return (
@@ -94,6 +95,8 @@ const RegisterPage = () => {
         <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3 }}>
           Register
         </Typography>
+
+        {error && <Alert severity="error">{error}</Alert>}
 
         <Grid container spacing={2}>
           <Grid item xs={6}>
@@ -196,16 +199,6 @@ const RegisterPage = () => {
           {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Register"}
         </Button>
       </Box>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

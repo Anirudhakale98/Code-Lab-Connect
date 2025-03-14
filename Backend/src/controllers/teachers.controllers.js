@@ -76,7 +76,7 @@ const getAssignments = asyncHandler(async (req, res) => {
 // Add an assignment to a class
 const addAssignment = asyncHandler(async (req, res) => {
     const { classroomId } = req.params;
-    const { title, description, deadline, exampleInput, exampleOutuput } = req.body;
+    const { title, description, deadline, exampleInput, exampleOutput } = req.body;
     // console.log("req.body: ", req.body);
     if (!title || !description || !deadline) {
         throw new ApiError(400, "Please provide all details");
@@ -90,7 +90,7 @@ const addAssignment = asyncHandler(async (req, res) => {
         description,
         deadline,
         "example.input": exampleInput,
-        "example.output": exampleOutuput,
+        "example.output": exampleOutput,
         createdBy: req.user._id,
     });
     await classroom.assignments.push(newAssignment._id);

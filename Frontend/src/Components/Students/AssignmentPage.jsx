@@ -47,7 +47,7 @@ const AssignmentPage = () => {
     const fetchAssignment = async () => {
       try {
         const response = (await axiosInstance.get(`/api/v1/students/classes/${classroomId}/assignments/${assignmentId}`)).data;
-        console.log("Assignment:", response.data.assignment); 
+        // console.log("Assignment:", response.data.assignment); 
         setCurrAssignment(response.data.assignment);
       } catch (error) {
         console.error("Error fetching assignment:", error);
@@ -122,7 +122,9 @@ const AssignmentPage = () => {
           {currAssignment?.example && (
             <Typography variant="body1" gutterBottom sx={{ mb: 2, whiteSpace: "pre-wrap" }}>
               <strong>Example:</strong>
+              <br/>
               Input: {currAssignment.example.input}
+              <br/>
               Output: {currAssignment.example.output}
             </Typography>
           )}

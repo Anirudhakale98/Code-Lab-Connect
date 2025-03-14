@@ -17,7 +17,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance.js";
 
-const ViewAssignmentPage = () => {
+const ViewAssignmentPageT = () => {
   const [loading, setLoading] = useState(true);
   const [currStudent, setCurrStudent] = useState(null);
   const [currAssignment, setCurrAssignment] = useState(null);
@@ -34,7 +34,7 @@ const ViewAssignmentPage = () => {
         setCurrStudent(studentResponse.data.user);
 
         const assignmentResponse = (await axiosInstance.get(
-          `/api/v1/students/classes/${classroomId}/assignments/${assignmentId}`
+          `/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}`
         )).data;
         setCurrAssignment(assignmentResponse.data.assignment);
 
@@ -67,7 +67,8 @@ const ViewAssignmentPage = () => {
         { marks }
       );
       alert("Marks submitted successfully");
-      navigate(`/api/v1/teachers/classes/${classroomId}/assignments`);
+      // console.log(`/teacher/classes/${classroomId}/assignments/${assignmentId}`);
+      navigate(`/teachers/classes/${classroomId}/assignments/${assignmentId}`);
     } catch (error) {
       console.error("Error submitting marks:", error);
     }
@@ -194,4 +195,4 @@ const ViewAssignmentPage = () => {
   );
 };
 
-export default ViewAssignmentPage;
+export default ViewAssignmentPageT;

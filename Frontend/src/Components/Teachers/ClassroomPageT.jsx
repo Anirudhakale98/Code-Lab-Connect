@@ -109,9 +109,10 @@ const ClassroomPageT = () => {
             <Box flexGrow={1} p={3} sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
                 <StyledCard>
                     <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                        {currClass.title}
+                        {currClass.title} 
                     </Typography>
                     <Typography variant="subtitle1">{currClass.description}</Typography>
+                    <Typography variant="subtitle1">Code: {currClass.classroomId}</Typography>
                 </StyledCard>
 
                 <Box mt={4}>

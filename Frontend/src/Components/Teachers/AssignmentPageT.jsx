@@ -64,6 +64,7 @@ const AssignmentPageT = () => {
         const notSubmittedStudentsRes = (await axiosInstance.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/notSubmittedStudents`)).data;
         // console.log("Not Submitted Students: ", notSubmittedStudentsRes.data.students); 
         setNotSubmittedStudents(notSubmittedStudentsRes.data.students || []);
+        
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -110,6 +111,7 @@ const AssignmentPageT = () => {
                             primary={<Typography sx={{ fontWeight: "bold", color: "#2e7d32" }}>{student.name}</Typography>}
                             secondary={`PRN: ${student.prn} | Roll No: ${student.rollNo}`}
                           />
+                          <ListItemText primary={"View assignment"} />
                         </ListItem>
                         <Divider />
                       </React.Fragment>
@@ -138,7 +140,7 @@ const AssignmentPageT = () => {
                         <ListItem>
                           <ListItemText
                             primary={<Typography sx={{ fontWeight: "bold", color: "#d32f2f" }}>{student.name}</Typography>}
-                            secondary={`PRN: ${student.prn} | Roll No: ${student.rollNo}`}
+                            secondary={`PRN: ${student.prn} | Roll No: ${student.rollNo} `}
                           />
                         </ListItem>
                         <Divider />

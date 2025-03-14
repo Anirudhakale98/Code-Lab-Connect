@@ -14,7 +14,7 @@ router.route("/classes/:classroomId/assignments").get(verifyJWT(["student"]), ge
 router.route("/classes/:classroomId/assignments/:assignmentId").get(verifyJWT(["student"]), getAssignment);
 router.route("/classes/:classroomId/assignments/:assignmentId/run-code").post(verifyJWT(["student"]), runCode);
 router.route("/classes/:classroomId/assignments/:assignmentId/submit").post(verifyJWT(["student"]), submitAssignment);
-router.route("/classes/:classroomId/assignments/:assignmentId/submissions/:studentId").get(verifyJWT(["student"]), getSubmission);
+router.route("/classes/:classroomId/assignments/:assignmentId/submissions/:studentId").get(verifyJWT(["student","teacher"]), getSubmission);
 
 
 export default router;

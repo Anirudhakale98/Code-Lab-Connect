@@ -10,8 +10,8 @@ axiosInstance.interceptors.response.use(
     response => response,
     error => {
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            alert('You are not authorized to access the page. Please login.');
             // Clear local storage or any auth data
-            localStorage.removeItem('user');
             // Redirect to login page
             window.location.href = '/login';
         }

@@ -11,6 +11,7 @@ import {
   TableContainer,
   TableRow,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
@@ -35,7 +36,7 @@ const ViewAssignmentPage = () => {
         const assignmentResponse = await axiosInstance.get(
           `/api/v1/students/classes/${classroomId}/assignments/${assignmentId}`
         );
-        console.log("Assignment:", assignmentResponse.data.data.assignment); // Debug
+        // console.log("Assignment:", assignmentResponse.data.data.assignment); // Debug
         setCurrAssignment(assignmentResponse.data.data.assignment);
 
         // Fetch submission details
@@ -66,7 +67,11 @@ const ViewAssignmentPage = () => {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", minHeight: "100vh", alignItems: "center" }}>
         <Typography variant="h6" color="error">
-          Error loading data
+          Submission not found! 
+          <br/>
+        <Button onClick={() => window.history.back()} variant="contained" color="primary">
+          Go Back
+        </Button>
         </Typography>
       </Box>
     );
