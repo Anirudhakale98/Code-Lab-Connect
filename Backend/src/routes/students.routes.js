@@ -6,15 +6,15 @@ import { getClasses, joinClass, deleteClass, getClassroom, getAssignments, getAs
 
 const router = Router();
 
-router.route("/classes").get(verifyJWT, getClasses);
-router.route("/join").post(verifyJWT, joinClass);
-router.route("/classes/:classroomId/delete").post(verifyJWT, deleteClass);
-router.route("/classes/:classroomId").get(verifyJWT, getClassroom);
-router.route("/classes/:classroomId/assignments").get(verifyJWT, getAssignments);
-router.route("/classes/:classroomId/assignments/:assignmentId").get(verifyJWT, getAssignment);
-router.route("/classes/:classroomId/assignments/:assignmentId/run-code").post(verifyJWT, runCode);
-router.route("/classes/:classroomId/assignments/:assignmentId/submit").post(verifyJWT, submitAssignment);
-router.route("/classes/:classroomId/assignments/:assignmentId/submissions/:studentId").get(verifyJWT, getSubmission);
+router.route("/classes").get(verifyJWT(["student"]), getClasses);
+router.route("/join").post(verifyJWT(["student"]), joinClass);
+router.route("/classes/:classroomId/delete").post(verifyJWT(["student"]), deleteClass);
+router.route("/classes/:classroomId").get(verifyJWT(["student"]), getClassroom);
+router.route("/classes/:classroomId/assignments").get(verifyJWT(["student"]), getAssignments);
+router.route("/classes/:classroomId/assignments/:assignmentId").get(verifyJWT(["student"]), getAssignment);
+router.route("/classes/:classroomId/assignments/:assignmentId/run-code").post(verifyJWT(["student"]), runCode);
+router.route("/classes/:classroomId/assignments/:assignmentId/submit").post(verifyJWT(["student"]), submitAssignment);
+router.route("/classes/:classroomId/assignments/:assignmentId/submissions/:studentId").get(verifyJWT(["student"]), getSubmission);
 
 
 export default router;

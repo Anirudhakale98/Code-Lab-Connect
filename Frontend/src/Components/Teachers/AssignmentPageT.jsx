@@ -12,7 +12,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance.js";
 import Dashboard from "../Dashboard";
 
 
@@ -43,25 +43,25 @@ const AssignmentPageT = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = (await axios.get("/api/v1/users/me")).data;
+        const userRes = (await axiosInstance.get("/api/v1/users/me")).data;
         // console.log("userRes: ", userRes);
         setUser(userRes.data.user);
 
-        const classesRes = (await axios.get("/api/v1/teachers/classes")).data;
+        const classesRes = (await axiosInstance.get("/api/v1/teachers/classes")).data;
         setClasses(classesRes.data.classes);
 
-        const currClassRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}`)).data;
+        const currClassRes = (await axiosInstance.get(`/api/v1/teachers/classes/${classroomId}`)).data;
         setCurrClass(currClassRes.data.classroom);
 
-        const currAssignmentRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}`)).data;
+        const currAssignmentRes = (await axiosInstance.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}`)).data;
         // console.log("Assignment: ", currAssignmentRes.data.assignment);
         setCurrAssignment(currAssignmentRes.data.assignment);
         
-        const submittedStudentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/students`)).data;
+        const submittedStudentsRes = (await axiosInstance.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/students`)).data;
         // console.log("Submitted Students: ", submittedStudentsRes.data.students);
         setSubmittedStudents(submittedStudentsRes.data.students || []);
 
-        const notSubmittedStudentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/notSubmittedStudents`)).data;
+        const notSubmittedStudentsRes = (await axiosInstance.get(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/notSubmittedStudents`)).data;
         // console.log("Not Submitted Students: ", notSubmittedStudentsRes.data.students); 
         setNotSubmittedStudents(notSubmittedStudentsRes.data.students || []);
 

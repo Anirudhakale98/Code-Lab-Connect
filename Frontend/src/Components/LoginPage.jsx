@@ -11,7 +11,8 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
+import axiosInstance from "../utils/axiosInstance.js";
 
 const themeStyle = {
   backgroundColor: "#f5f5f5",
@@ -36,7 +37,7 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("/api/v1/users/login", { email, password });
+      const response = await axiosInstance.post("/api/v1/users/login", { email, password });
       if (response.status === 200) {
         const role = response.data?.data?.user?.role;
         navigate(role === "student" ? "/students" : "/teachers");

@@ -21,7 +21,7 @@ import {
 import { Close as CloseIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { styled } from "@mui/system";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance.js";
 import Dashboard from "../Dashboard";
 
 const StyledCard = styled(Card)(({ color }) => ({
@@ -71,10 +71,10 @@ const ClassroomT = () => {
 
   const fetchData = async () => {
     try {
-      const userResponse = (await axios.get("/api/v1/users/me")).data;
+      const userResponse = (await axiosInstance.get("/api/v1/users/me")).data;
       setUser(userResponse.data?.user || null);
 
-      const classesResponse = (await axios.get("/api/v1/teachers/classes")).data;
+      const classesResponse = (await axiosInstance.get("/api/v1/teachers/classes")).data;
       setClasses(classesResponse.data?.classes || []);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -94,7 +94,7 @@ const ClassroomT = () => {
     try {
       setLoading(true);
       setError(""); // Clear previous error
-      const res = (await axios.post("/api/v1/teachers/classes", newClass)).data;
+      const res = (await axiosInstance.post("/api/v1/teachers/classes", newClass)).data;
 
       setClasses((prev) => [...prev, res.data.classroom]);
       setSnackbar({ open: true, message: "Class added successfully!", severity: "success" });
@@ -110,7 +110,7 @@ const ClassroomT = () => {
 
   const handleDeleteClass = async (classroomId) => {
     try {
-      await axios.post(`/api/v1/teachers/classes/${classroomId}/delete`);
+      await axiosInstance.post(`/api/v1/teachers/classes/${classroomId}/delete`);
       setClasses(classes.filter((classItem) => classItem.classroomId !== classroomId));
       setSnackbar({ open: true, message: "Class deleted successfully!", severity: "success" });
     } catch (err) {

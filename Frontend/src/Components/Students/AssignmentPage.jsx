@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import MonacoEditor from "@monaco-editor/react";
 import { useTheme } from "@mui/material/styles";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance.js";
 import { useNavigate, useParams } from "react-router-dom";
 
 const initialCode = {
@@ -46,7 +46,7 @@ const AssignmentPage = () => {
   useEffect(() => {
     const fetchAssignment = async () => {
       try {
-        const response = (await axios.get(`/api/v1/students/classes/${classroomId}/assignments/${assignmentId}`)).data;
+        const response = (await axiosInstance.get(`/api/v1/students/classes/${classroomId}/assignments/${assignmentId}`)).data;
         console.log("Assignment:", response.data.assignment); 
         setCurrAssignment(response.data.assignment);
       } catch (error) {
@@ -73,7 +73,7 @@ const AssignmentPage = () => {
   const handleRunCode = async () => {
     try {
       setOutput("Running code...");
-      const response = (await axios.post(`/api/v1/students/classes/${classroomId}/assignments/${assignmentId}/run-code`, {
+      const response = (await axiosInstance.post(`/api/v1/students/classes/${classroomId}/assignments/${assignmentId}/run-code`, {
         language,
         code,
         input
@@ -90,7 +90,7 @@ const AssignmentPage = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post(`/api/v1/students/classes/${classroomId}/assignments/${assignmentId}/submit`, {
+      await axiosInstance.post(`/api/v1/students/classes/${classroomId}/assignments/${assignmentId}/submit`, {
         code,
         language,
         input

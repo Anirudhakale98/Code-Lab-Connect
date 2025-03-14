@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Drawer, List, ListItem, ListItemText, Toolbar, Typography, Avatar, Button, Divider, Box, CircularProgress, Snackbar, Alert } from "@mui/material";
 import { styled } from "@mui/system";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance.js";
 
 const drawerWidth = 260;
 
@@ -41,7 +41,7 @@ const Dashboard = ({ user = { firstName: "F", lastName: "L", role: "teacher" }, 
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post("/api/v1/users/logout");
+      const response = await axiosInstance.post("/api/v1/users/logout");
       if (response.status === 200) {
         localStorage.removeItem("user");
         navigate("/login");

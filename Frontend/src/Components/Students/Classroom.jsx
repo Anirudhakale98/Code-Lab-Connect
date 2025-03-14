@@ -7,7 +7,7 @@ import { Close as CloseIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { styled } from "@mui/system";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import Dashboard from "../Dashboard";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance.js";
 
 const StyledCard = styled(Card)(({ color }) => ({
   background: color,
@@ -37,10 +37,10 @@ const Classroom = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userResponse = (await axios.get("/api/v1/users/me")).data;
+        const userResponse = (await axiosInstance.get("/api/v1/users/me")).data;
         setUser(userResponse.data.user);
 
-        const classesResponse = (await axios.get("/api/v1/students/classes")).data;
+        const classesResponse = (await axiosInstance.get("/api/v1/students/classes")).data;
         setClasses(classesResponse.data || []);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -56,7 +56,7 @@ const Classroom = () => {
       return;
     }
     try {
-      const res = (await axios.post("/api/v1/students/join", { classroomId })).data;
+      const res = (await axiosInstance.post("/api/v1/students/join", { classroomId })).data;
       if (res.data) {
         setClasses((prevClasses) => [...prevClasses, res.data]);
       }
@@ -71,7 +71,7 @@ const Classroom = () => {
 
   const handleDeleteClass = async (classroomId) => {
     try {
-      const deletedClassRes = (await axios.post(`/api/v1/students/classes/${classroomId}/delete`)).data;
+      const deletedClassRes = (await axiosInstance.post(`/api/v1/students/classes/${classroomId}/delete`)).data;
       setClasses((prevClasses) => prevClasses.filter((c) => c.classroomId !== classroomId));
     } catch (err) {
       console.error("Error deleting class:", err);

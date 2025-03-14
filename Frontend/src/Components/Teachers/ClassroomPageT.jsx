@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance.js";
 import Dashboard from "../Dashboard";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -47,16 +47,16 @@ const ClassroomPageT = () => {
     useEffect(() => {
         const fetchClassData = async () => {
             try {
-                const user = (await axios.get("/api/v1/users/me")).data;
+                const user = (await axiosInstance.get("/api/v1/users/me")).data;
                 setCurrUser(user.data.user);
 
-                const classRes = (await axios.get("/api/v1/teachers/classes")).data;
+                const classRes = (await axiosInstance.get("/api/v1/teachers/classes")).data;
                 setClasses(classRes.data.classes);
 
-                const currClassroom = (await axios.get(`/api/v1/teachers/classes/${classroomId}`)).data;
+                const currClassroom = (await axiosInstance.get(`/api/v1/teachers/classes/${classroomId}`)).data;
                 setCurrClass(currClassroom.data.classroom);
 
-                const assignmentsRes = (await axios.get(`/api/v1/teachers/classes/${classroomId}/assignments`)).data;
+                const assignmentsRes = (await axiosInstance.get(`/api/v1/teachers/classes/${classroomId}/assignments`)).data;
                 setAssignments(assignmentsRes.data.assignments);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -81,7 +81,7 @@ const ClassroomPageT = () => {
         }
 
         try {
-            const res = (await axios.post(`/api/v1/teachers/classes/${classroomId}/assignments`, newAssignment)).data;
+            const res = (await axiosInstance.post(`/api/v1/teachers/classes/${classroomId}/assignments`, newAssignment)).data;
             setAssignments([...assignments, res.data.assignments]);
             handleCloseDialog();
         } catch (error) {
@@ -93,7 +93,7 @@ const ClassroomPageT = () => {
         if (!window.confirm("Are you sure you want to delete this assignment?")) return;
 
         try {
-            await axios.post(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/delete`);
+            await axiosInstance.post(`/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/delete`);
             setAssignments(assignments.filter((assignment) => assignment._id !== assignmentId));
         } catch (error) {
             console.error("Error deleting assignment:", error);

@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance.js";
 
 const themeStyle = {
   backgroundColor: "#f5f5f5",
@@ -63,7 +63,7 @@ const RegisterPage = () => {
     };
 
     try {
-      const response = await axios.post("/api/v1/users/register", userData);
+      const response = await axiosInstance.post("/api/v1/users/register", userData);
       if (response.status === 201) {
         setSnackbar({ open: true, message: "Registration successful! Redirecting...", severity: "success" });
         setTimeout(() => navigate("/login"), 2000);

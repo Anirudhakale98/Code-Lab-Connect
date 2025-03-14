@@ -12,7 +12,7 @@ import {
 import { styled } from "@mui/system";
 import { Link, useParams } from "react-router-dom";
 import Dashboard from "../Dashboard";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance.js";
 
 const StyledCard = styled(Card)({
     background: "linear-gradient(135deg, #607d8b, #455a64)",
@@ -38,10 +38,10 @@ const ClassroomPage = () => {
         const fetchData = async () => {
             try {
                 const [userRes, classesRes, classRes, assignmentsRes] = await Promise.all([
-                    axios.get("/api/v1/users/me"),
-                    axios.get("/api/v1/students/classes"),
-                    axios.get(`/api/v1/students/classes/${classroomId}`),
-                    axios.get(`/api/v1/students/classes/${classroomId}/assignments`)
+                    axiosInstance.get("/api/v1/users/me"),
+                    axiosInstance.get("/api/v1/students/classes"),
+                    axiosInstance.get(`/api/v1/students/classes/${classroomId}`),
+                    axiosInstance.get(`/api/v1/students/classes/${classroomId}/assignments`)
                 ]);
 
                 setUser(userRes.data?.data?.user);

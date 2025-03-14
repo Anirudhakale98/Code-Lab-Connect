@@ -16,33 +16,33 @@ import {
 const router = Router();
 
 // secured routes
-router.route("/classes").get(verifyJWT, getClasses);
-router.route("/classes").post(verifyJWT, addClass);
-router.route("/classes/:classroomId/delete").post(verifyJWT, deleteClass);
-router.route("/classes/:classroomId").get(verifyJWT, getClassroom);
+router.route("/classes").get(verifyJWT(["teacher"]), getClasses);
+router.route("/classes").post(verifyJWT(["teacher"]), addClass);
+router.route("/classes/:classroomId/delete").post(verifyJWT(["teacher"]), deleteClass);
+router.route("/classes/:classroomId").get(verifyJWT(["teacher"]), getClassroom);
 router
     .route("/classes/:classroomId/assignments")
-    .get(verifyJWT, getAssignments);
+    .get(verifyJWT(["teacher"]), getAssignments);
 router
     .route("/classes/:classroomId/assignments")
-    .post(verifyJWT, addAssignment);
+    .post(verifyJWT(["teacher"]), addAssignment);
 router
     .route("/classes/:classroomId/assignments/:assignmentId/delete")
-    .post(verifyJWT, deleteAssignment);
+    .post(verifyJWT(["teacher"]), deleteAssignment);
 router
     .route("/classes/:classroomId/assignments/:assignmentId")
-    .get(verifyJWT, getAssignment);
+    .get(verifyJWT(["teacher"]), getAssignment);
 router
     .route("/classes/:classroomId/assignments/:assignmentId/students")
-    .get(verifyJWT, getSubmittedStudents);
+    .get(verifyJWT(["teacher"]), getSubmittedStudents);
 router
     .route(
         "/classes/:classroomId/assignments/:assignmentId/notSubmittedStudents"
     )
-    .get(verifyJWT, getNotSubmittedStudents);
+    .get(verifyJWT(["teacher"]), getNotSubmittedStudents);
 
 router.
     route("/classes/:classroomId/assignments/:assignmentId/submissions/:submissionId/marks")
-    .post(verifyJWT, addMarks);
+    .post(verifyJWT(["teacher"]), addMarks);
 
 export default router;

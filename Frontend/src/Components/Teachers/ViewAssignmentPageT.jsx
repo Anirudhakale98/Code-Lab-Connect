@@ -15,7 +15,7 @@ import {
   Button
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance.js";
 
 const ViewAssignmentPage = () => {
   const [loading, setLoading] = useState(true);
@@ -30,15 +30,15 @@ const ViewAssignmentPage = () => {
     const fetchAssignment = async () => {
       setLoading(true);
       try {
-        const studentResponse = (await axios.get(`/api/v1/users/${studentId}`)).data;
+        const studentResponse = (await axiosInstance.get(`/api/v1/users/${studentId}`)).data;
         setCurrStudent(studentResponse.data.user);
 
-        const assignmentResponse = (await axios.get(
+        const assignmentResponse = (await axiosInstance.get(
           `/api/v1/students/classes/${classroomId}/assignments/${assignmentId}`
         )).data;
         setCurrAssignment(assignmentResponse.data.assignment);
 
-        const submissionResponse = await axios.get(
+        const submissionResponse = await axiosInstance.get(
           `/api/v1/students/classes/${classroomId}/assignments/${assignmentId}/submissions/${studentId}`
         );
         setSubmission(submissionResponse.data.data.submission);
@@ -62,7 +62,7 @@ const ViewAssignmentPage = () => {
       return;
     }
     try {
-      await axios.post(
+      await axiosInstance.post(
         `/api/v1/teachers/classes/${classroomId}/assignments/${assignmentId}/submissions/${submission._id}/marks`,
         { marks }
       );

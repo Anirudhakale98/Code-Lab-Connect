@@ -13,7 +13,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 const ViewAssignmentPage = () => {
   const [loading, setLoading] = useState(true);
@@ -26,20 +26,20 @@ const ViewAssignmentPage = () => {
     const fetchAssignment = async () => {
       try {
         // Fetch student details
-        const studentResponce = await axios.get(`/api/v1/users/me`);
+        const studentResponce = await axiosInstance.get(`/api/v1/users/me`);
         // console.log("Student:", studentResponce.data.data.user); // Debug
         setCurrStudent(studentResponce.data.data.user);
         const studentId = studentResponce.data.data.user._id;
 
         // Fetch assignment details
-        const assignmentResponse = await axios.get(
+        const assignmentResponse = await axiosInstance.get(
           `/api/v1/students/classes/${classroomId}/assignments/${assignmentId}`
         );
         console.log("Assignment:", assignmentResponse.data.data.assignment); // Debug
         setCurrAssignment(assignmentResponse.data.data.assignment);
 
         // Fetch submission details
-        const submissionResponse = await axios.get(
+        const submissionResponse = await axiosInstance.get(
           `/api/v1/students/classes/${classroomId}/assignments/${assignmentId}/submissions/${studentId}`, 
         );
         // console.log("Submission:", submissionResponse.data.data.submission); // Debug
