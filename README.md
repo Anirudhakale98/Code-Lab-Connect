@@ -82,7 +82,7 @@ Ensure you have the following installed:
    npm start
    ```
 
-3. Access the application at `http://localhost:3000`.
+3. Access the application at `http://localhost:3000` or the live deployment at [Code Lab Connect Client](https://code-lab-connect-client.vercel.app).
 
 ## Contributing
 
