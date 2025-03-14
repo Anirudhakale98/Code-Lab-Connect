@@ -6,6 +6,7 @@ import { Classroom } from "../models/classroom.models.js";
 import { Assignments } from "../models/assignments.models.js";
 import mongoose from "mongoose";
 import { Submissions } from "../models/submission.models.js";
+import axios from "axios";
 
 /// Get all classes of a student
 const getClasses = asyncHandler(async (req, res) => {
@@ -98,16 +99,54 @@ const getAssignment = asyncHandler(async (req, res) => {
 
 // Execute code function
 const executeCode = async ({ code, language, input }) => {
-    // Simulate code execution (replace with actual logic)
-    const output = `Executed ${language} code: ${code} with input: ${input}`;
-    return { output };
-};
+    try {
+        let versionIndex = '0';
+        if (language === 'python') {
+            language = 'python3';
+            versionIndex = '5';
+        } else if (language === 'java') {
+            language = 'java';
+            versionIndex = '5';
+        } else if (language === 'cpp') {
+            language = 'cpp17';
+            versionIndex = '2';
+        }
 
+        const response = await axios.post('https://api.jdoodle.com/v1/execute', {
+            clientId: process.env.JDOODLE_CLIENT_ID,
+            clientSecret: process.env.JDOODLE_CLIENT_SECRET,
+            script: code,
+            stdin: input || '',
+            language,
+            versionIndex,
+            compileOnly: false // Set to true for compilation only
+        });
+
+        const { output, error } = response.data;
+
+        // console.log('JDoodle Response:', response.data);
+
+        if (error) {
+            return { output: `Compilation Error: ${error}` }; // Return the compilation error
+        }
+
+        // If output is empty or just newlines, indicate successful compilation
+        if (!output || output.trim() === '') {
+            return { output: 'Compilation successful, no errors found.' };
+        }
+
+        return { output };
+    } catch (err) {
+        console.error('JDoodle API Error:', err.message);
+        throw new Error('Code execution failed');
+    }
+};
 // Run code for an assignment
 const runCode = asyncHandler(async (req, res) => {
     const { code, language, input } = req.body;
 
     const result = await executeCode({ code, language, input });
+    // console.log("Result of code execution   ", result);
 
     res.status(200).json(new ApiResponse(200, { output: result.output }));
 });
@@ -117,31 +156,27 @@ const submitAssignment = asyncHandler(async (req, res) => {
     const { code, language, input } = req.body;
     const { classroomId, assignmentId } = req.params;
 
-    // Run the code and get the output
     const { output } = await executeCode({ code, language, input });
 
-    // Fetch classroom and assignment
     const classroom = await Classroom.findOne({ classroomId });
     if (!classroom) {
-        throw new ApiError(404, "Classroom not found");
+        throw new ApiError(404, 'Classroom not found');
     }
 
     const assignment = await Assignments.findOne({ _id: assignmentId });
     if (!assignment) {
-        throw new ApiError(404, "Assignment not found");
+        throw new ApiError(404, 'Assignment not found');
     }
 
-    // check is submission is already submitted for assignment
     let submission = await Submissions.findOne({
         assignmentId: assignment._id,
         studentId: req.user._id,
     });
-    if(submission){
-        // replace the submission
+
+    if (submission) {
         submission.submission = { code, input, output };
-        submission.save();
-    }else{
-        // Create a new submission
+        await submission.save();
+    } else {
         submission = new Submissions({
             assignmentId: assignment._id,
             studentId: req.user._id,
